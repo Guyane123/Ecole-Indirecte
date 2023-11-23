@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;0,9..40,1000;1,9..40,100;1,9..40,200;1,9..40,300;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700;1,9..40,800;1,9..40,900;1,9..40,1000&display=swap');
-
-
-:root {
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* :root {
     --text: #2A041F;
     --text-white:rgb(251, 213, 240);
     --bg: #FBD5F0;
@@ -9,10 +7,21 @@
     --secondary: #F6A7E0;
     --accent: #BE138E;
 
+} */
+:root {
+    --text: #10050B;
+    --text-white:rgb(251, 213, 240);
+    --bg: #F9EBF3;
+    --primary: #CD5B63;
+    --secondary: #EBD1BD;
+    --accent: #A86634;
+    --margin-lg: 5% 12%;
+
 }
 body {
-    margin: 0px;
-    font-family: 'DM Sans', sans-serif;
+    margin: var(--margin-lg);
+    font-family: 'Montserrat', sans-serif;
     color: var(--text);
     background-color: var(--bg);
+    font-weight: 400;
 }

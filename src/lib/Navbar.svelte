@@ -2,6 +2,9 @@
     import { currentUser } from "../stores";
     import { onMount } from "svelte";
     import { clickOutside } from "./clickOutside";
+    import {Link} from "svelte-routing"
+
+    let baseUrl = `${window.location.protocol}//${window.location.host}`;
 
     let listContainer: HTMLElement;
     let burgerContainer: SVGSVGElement;
@@ -19,6 +22,12 @@
         b1.classList.toggle("c1");
         b2.classList.toggle("c2");
         b3.classList.toggle("c3");
+    }
+
+    function handleSignOut() {
+        console.log("signed out !")
+        currentUser.set(null)
+        window.location.href = "/";
     }
 
     import burger from "../assets/burger.svg";
@@ -61,6 +70,9 @@
             />
         </svg>
     </button>
+    <button class="signout" on:click={() => handleSignOut()}>
+        Sign Out
+    </button>
     <div
         class="list_container hidden"
         bind:this={listContainer}
@@ -78,15 +90,29 @@
             </div>
         </div>
         <ul class="list">
-            <li class="li">Accueil</li>
-            <li class="li">Badge cantine</li>
-            <li class="li">Notes</li>
+            <Link to={`${baseUrl}`} class="li">Accueil</Link>
+            <Link to={`/cantine`} class="li">Badge cantine</Link>
+            <Link class="li" to={`${baseUrl}/notes`}>Notes</Link>
         </ul>
     </div>
 </nav>
 
 <style>
+    .list {
+        margin-top: 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
 
+        
+    }
+    .signout {
+        all: unset;
+        padding: 16px;
+        border-radius: 100px;
+        background-color: var(--secondary);
+        cursor: pointer;
+    }
     .info {
         display: flex;
         justify-content: space-around;
@@ -97,9 +123,18 @@
         height: 64px;
         border-radius: 100%;
     }
-    li {
+    :global(a) {
+        all: unset;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    .li {
+        all: unset;
+        color: black;
         list-style-type: none;
         margin-bottom: 16px;
+        cursor: pointer;
     }
     p {
         display: flex;
@@ -136,12 +171,14 @@
         cursor: pointer;
     }
     .nav {
-        background-color: var(--secondary);
-        padding: 16px;
+        /* background-color: var(--secondary); */
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12%;
     }
     .list_container {
 
-
+        z-index: 10;
         margin: 0;
         left: 0;
         top: 0px;

@@ -8,6 +8,8 @@
    version="1.1"
    id="svg5"
    xml:space="preserve"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -23,9 +25,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.73851712"
-     inkscape:cx="394.03284"
-     inkscape:cy="347.99464"
+     inkscape:zoom="0.52221046"
+     inkscape:cx="68.937722"
+     inkscape:cy="143.62026"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -35,10 +37,10 @@
      id="defs2"><linearGradient
        inkscape:collect="always"
        id="linearGradient8416"><stop
-         style="stop-color:#ba128a;stop-opacity:1;"
+         style="stop-color:#a86634;stop-opacity:1;"
          offset="0"
          id="stop8412" /><stop
-         style="stop-color:#960066;stop-opacity:1;"
+         style="stop-color:#cd5b63;stop-opacity:1;"
          offset="1"
          id="stop8414" /></linearGradient><linearGradient
        inkscape:collect="always"

@@ -2,6 +2,7 @@
     import User from "../../lib/User";
     import { currentUser } from "../../stores";
     import logo from "../../assets/logo.svg"
+    import JsBarcode from "jsbarcode";    import { Router, Route, Link } from "svelte-routing";
 
     let error: HTMLElement;
 
@@ -10,6 +11,8 @@
 
     if($currentUser) {
         window.location.href = '/home';
+
+        // redirct
     }
 
 
@@ -40,6 +43,7 @@
 <main class="main">
     <div class="flex white">
         <div class="flex col">
+
             <div>
                 <img class="img" src={logo} alt="Logo">
                 <h1>EcoleIndirect</h1>
@@ -117,7 +121,10 @@
         flex-direction: column;
     }
     .main {
+        position: absolute;
         margin: 0px;
+        left: 0px;
+        top: 0px;
         display: flex;
         width: 100%;
         height: 100%;
