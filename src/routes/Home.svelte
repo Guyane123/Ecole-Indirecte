@@ -2,25 +2,27 @@
 
 
     import { onMount } from "svelte";
-    import { currentUser } from "../../stores";
-    import User from "../../lib/User";
-    import Navbar from "../../lib/Navbar.svelte";
-    import compliments from "../../assets/compliments.json"
-
+    import { currentUser } from "../stores";
+    import User from "../lib/User";
+    import Navbar from "../lib/Navbar.svelte"
+    import compliments from "../assets/compliments.json"
+    import { redirectTo } from "../lib/redirect";
+    import Prochaincour from "../lib/prochaincour.svelte";
     if (!$currentUser) {
-        window.location.href = "/";
+        redirectTo("/")
     }
 
     let barecode: SVGSVGElement;
 
     let petitmessagegentil = ""
 
+    const rdm = Math.round(Math.random() * 100) % compliments.length
+
+    petitmessagegentil = compliments[rdm]
+
     onMount(() => {
         $currentUser?.mainAccount?.profile.sexe == "F"
-
-        const rdm = Math.round(Math.random() * 100) % compliments.length
         
-        petitmessagegentil = compliments[rdm]
     });
 
 
@@ -39,11 +41,8 @@
         {petitmessagegentil}
     </h2>
 
-    <!-- <div class="etablissement">
-        <img width="225px" src={`https://api.ecoledirecte.com/v3/telechargement.awp?cToken=MDU2MDA5OEM=&verbe=get&fichierId=${$currentUser?.mainAccount?.logoEtablissement}&leTypeDeFichier=IMPORT_FTP`} alt="votre établissement">
-        <p class="nomEtablissement">{$currentUser?.mainAccount?.nomEtablissement}</p>
-    </div>
- -->
+    <Prochaincour />
+
 
 </main>
 
@@ -60,6 +59,7 @@
         opacity: 0%;
         color: black;
         font-weight: normal;
+        margin-bottom: 98px;
     }
     .div {
         display: flex;

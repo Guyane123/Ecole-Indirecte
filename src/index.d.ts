@@ -70,3 +70,30 @@ export type loginUser = {
         changementdeMDP: boolean;
     };
 };
+
+export type matiere = {
+    id: 46234; //int | Semble être un identifiant unique du cours
+    text: string; //string | Nom du cours (peut diférer de la matière)
+    matiere: string;
+    codeMatiere: string; //string | Code matière interne au service ED
+    typeCours: string; //string | Semble varier (COURS / PERMANENCE)
+    start_date: Date;
+    end_date: Date;
+    color: string; //string | Couleur hex du cours sur l'edt
+    dispensable: boolean; //string | Si l'élève doit se rendre en cours
+    dispense: string; //int | Rhalala, le sport (:
+    prof: string;
+    salle: string;
+    classe: string; //string | vide si est dispensé dans plusieures classes
+    classeId: number; //int | ID de la classe dans laquelle le cours est dispensé (0 si est dispensé dans plusieures classes)
+    classeCode: string; //int | Code de la classe (je pense qu'on a compris avec le temps que c'était vide si la cours était dispensé dans plusieures classes)
+    groupe: string; //string | Nom du groupe (si dispensé dans plusieures classes)
+    groupeCode: string; //string | Code du groupe
+    isFlexible: boolean; //bool | ???
+    groupeId: number; //int | ID du groupe
+    icone: string; //string | Depuis quand on peut avoir des icones ?
+    isModifie: boolean; //bool | ???
+    contenuDeSeance: boolean; //bool | false même si du contenu est posté
+    devoirAFaire: boolean; //bool | false même si un devoir est posté
+    isAnnule: boolean; //bool | Si le cours est annulé (franglais dégeu)
+};

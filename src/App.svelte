@@ -1,17 +1,16 @@
 <script lang="ts">
     import { Router, Route, Link } from "svelte-routing";
-    import Login from "./routes/Login/+page.svelte";
-    import Home from "./routes/Home/+page.svelte";
-    import Cantine from "./routes/Cantine/+page.svelte";
+    import Login from "./routes/Login.svelte";
+    import Home from "./routes/Home.svelte";
+    import Cantine from "./routes/Cantine.svelte";
 
-    let baseUrl = `${window.location.protocol}//${window.location.host}`;
-
-    export let url = "";
 </script>
 
-<Router url={url}>
-    <Route path={``}><Login /></Route>
-    <Route path={`*`}><Login /></Route>
-    <Route path={`/home`}><Home /></Route>
-    <Route path={`/cantine`}><Cantine /></Route>
+<Router>
+    <div>
+        <Route path="/ecoleindirecte/" component={Login}/>
+        <Route path="/ecoleindirecte/*" component={Login}/>
+        <Route path="/ecoleindirecte/home" component={Home}/>
+        <Route path="/ecoleindirecte/cantine" component={Cantine}/>
+    </div>
 </Router>

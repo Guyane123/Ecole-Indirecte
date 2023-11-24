@@ -27,10 +27,11 @@
     function handleSignOut() {
         console.log("signed out !")
         currentUser.set(null)
-        window.location.href = "/";
+        redirectTo("/")
     }
 
     import burger from "../assets/burger.svg";
+    import { redirectTo } from "./redirect";
 </script>
 
 <nav class="nav">

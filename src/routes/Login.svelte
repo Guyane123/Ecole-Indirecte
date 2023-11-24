@@ -1,8 +1,9 @@
 <script lang="ts">
-    import User from "../../lib/User";
-    import { currentUser } from "../../stores";
-    import logo from "../../assets/logo.svg"
-    import JsBarcode from "jsbarcode";    import { Router, Route, Link } from "svelte-routing";
+    import User from "../lib/User";
+    import { currentUser } from "../stores";
+    import logo from "../assets/logo.svg"
+    import { redirectTo } from "../lib/redirect";
+
 
     let error: HTMLElement;
 
@@ -10,9 +11,8 @@
     let motdepasse = "";
 
     if($currentUser) {
-        window.location.href = '/home';
+        redirectTo("/home")
 
-        // redirct
     }
 
 
@@ -29,7 +29,7 @@
             .then((res) => {
                 currentUser.set(newUser);
                 console.log("currentUser set in /login:", $currentUser);
-                window.location.href = '/home';
+                redirectTo("/home")
             })
             .catch((err) => {
                 if (err) {

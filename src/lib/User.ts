@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { devoir, loginUser, user } from '../index';
+import type { devoir, loginUser, matiere, user } from "../index";
 
 const username = encodeURIComponent("Damien Claret");
 const password = encodeURIComponent("Briule@42");
@@ -21,13 +21,16 @@ async function EDFetch(url: string, body?: {}, token: string = "") {
 
     return res;
 }
+
+function formatDate(date: Date) {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`;
+}
 export default class User {
     identifiant: string;
     motdepasse: string;
     mainAccount: user | undefined;
     XToken: string;
     homeworks: Array<devoir> | undefined;
-
 
     constructor(id: string, mdp: string) {
         (this.identifiant = id),
@@ -37,7 +40,7 @@ export default class User {
         // this.login()
     }
 
-    async request(url: string, args?: any, date?: string) {
+    async request(url: string, args?: any) {
         try {
             const response = await axios.post(
                 ED + url,
@@ -69,12 +72,11 @@ export default class User {
 
         const res = await this.request("v3/login.awp?verbe=get&", body);
 
-        this.XToken = await res.token
+        this.XToken = await res.token;
 
-        this.mainAccount = res.data.accounts[0]
+        this.mainAccount = res.data.accounts[0];
 
         // console.log(this.mainAccount)
-
     }
 
     async getHomework(date: Date) {
@@ -82,21 +84,41 @@ export default class User {
             return;
         }
 
-        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`
-
-
+        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${
+            date.getDate() + 1
+        }`;
 
         const cahierdetexte = `v3/Eleves/${this.mainAccount.id}/cahierdetexte/${formattedDate}.awp?verbe=get&`;
 
         const res = await this.request(cahierdetexte, date);
 
-        let homework: Array<devoir> = res.data
+        let homework: Array<devoir> = res.data;
 
-        return homework
+        return homework;
+    }
+
+    async getSchedule(startDate: Date, stopDate: Date) {
+        if (!this.mainAccount) {
+            return;
+        }
+        const formattedStartDate = formatDate(startDate);
+        const formattedStopDate = formatDate(stopDate);
+
+        const body = {
+            dateDebut: formattedStartDate,
+            dateFin: formattedStopDate,
+            avecTrous: false,
+        };
+        const cahierdetexte = `/v3/E/${this.mainAccount.id}/emploidutemps.awp?verbe=get&`;
+
+        const res = await this.request(cahierdetexte, body);
+
+        let schedule: Array<matiere> = res.data;
+
+        return schedule;
     }
 
     getUserInfo() {
-
-        return this.mainAccount
+        return this.mainAccount;
     }
 }
