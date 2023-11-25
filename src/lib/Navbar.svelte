@@ -2,9 +2,7 @@
     import { currentUser } from "../stores";
     import { onMount } from "svelte";
     import { clickOutside } from "./clickOutside";
-    import {Link} from "svelte-routing"
 
-    let baseUrl = `${window.location.protocol}//${window.location.host}`;
 
     let listContainer: HTMLElement;
     let burgerContainer: SVGSVGElement;
@@ -12,8 +10,6 @@
     let b1: SVGPathElement;
     let b2: SVGPathElement;
     let b3: SVGPathElement;
-
-    onMount(() => {});
 
     function handleClick() {
         listContainer.classList.toggle("hidden");
@@ -25,13 +21,14 @@
     }
 
     function handleSignOut() {
-        console.log("signed out !")
-        currentUser.set(null)
-        redirectTo("/")
+        console.log("signed out !");
+        currentUser.set(null);
+        redirectTo("/");
     }
 
     import burger from "../assets/burger.svg";
     import { redirectTo } from "./redirect";
+    import { link } from "svelte-spa-router";
 </script>
 
 <nav class="nav">
@@ -71,9 +68,7 @@
             />
         </svg>
     </button>
-    <button class="signout" on:click={() => handleSignOut()}>
-        Sign Out
-    </button>
+    <button class="signout" on:click={() => handleSignOut()}> Sign Out </button>
     <div
         class="list_container hidden"
         bind:this={listContainer}
@@ -87,13 +82,27 @@
                 alt="Logo etablissement"
             />
             <div>
-                <p><span>Mon espace Elève</span><span>{$currentUser?.mainAccount?.prenom} {$currentUser?.mainAccount?.nom}</span><span>{$currentUser?.mainAccount?.nomEtablissement}</span></p>
+                <p>
+                    <span>Mon espace Elève</span><span
+                        >{$currentUser?.mainAccount?.prenom}
+                        {$currentUser?.mainAccount?.nom}</span
+                    ><span>{$currentUser?.mainAccount?.nomEtablissement}</span>
+                </p>
             </div>
         </div>
         <ul class="list">
-            <Link to={`${baseUrl}`} class="li">Accueil</Link>
-            <Link to={`/cantine`} class="li">Badge cantine</Link>
-            <Link class="li" to={`${baseUrl}/notes`}>Notes</Link>
+            <li class="li">
+                <a href={`/home`} use:link>Accueil</a>
+            </li>
+            <li class="li">
+                <a href={`/cantine`} use:link>Badge cantine</a>
+            </li>
+            <li class="li">
+                <a href={`/notes`} use:link>Notes</a>
+            </li>
+            <!-- <li class="li">
+                <Link to={`/ecoleindirecte/cahierDeTexte`}>Notes</Link>
+            </li> -->
         </ul>
     </div>
 </nav>
@@ -104,13 +113,11 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-
-        
     }
     .signout {
         all: unset;
         padding: 16px;
-        border-radius: 100px;
+        border-radius: 98px;
         background-color: var(--secondary);
         cursor: pointer;
     }
@@ -120,22 +127,26 @@
         align-items: center;
     }
     .logoEtablissement {
-        width: 64px;
-        height: 64px;
+        width: 48px;
+        height: 48px;
         border-radius: 100%;
+        margin-right: 16px;
+        margin-left: 16px;
     }
     :global(a) {
         all: unset;
         text-decoration: none;
         cursor: pointer;
     }
-    
+
     .li {
         all: unset;
         color: black;
         list-style-type: none;
         margin-bottom: 16px;
         cursor: pointer;
+        margin-bottom: 16px;
+        font-weight: 800;
     }
     p {
         display: flex;
@@ -178,7 +189,6 @@
         margin-bottom: 12%;
     }
     .list_container {
-
         z-index: 10;
         margin: 0;
         left: 0;

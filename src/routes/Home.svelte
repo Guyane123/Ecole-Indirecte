@@ -1,48 +1,43 @@
 <script lang="ts">
-
-
     import { onMount } from "svelte";
     import { currentUser } from "../stores";
     import User from "../lib/User";
-    import Navbar from "../lib/Navbar.svelte"
-    import compliments from "../assets/compliments.json"
+    import Navbar from "../lib/Navbar.svelte";
+    import compliments from "../assets/compliments.json";
     import { redirectTo } from "../lib/redirect";
     import Prochaincour from "../lib/prochaincour.svelte";
+    import Prochaindevoirs from "../lib/prochaindevoirs.svelte";
+
+
     if (!$currentUser) {
-        redirectTo("/")
-    }
+            redirectTo("/");
+        }
 
-    let barecode: SVGSVGElement;
+    let petitmessagegentil = "";
 
-    let petitmessagegentil = ""
+    const rdm = Math.round(Math.random() * 100) % compliments.length;
 
-    const rdm = Math.round(Math.random() * 100) % compliments.length
-
-    petitmessagegentil = compliments[rdm]
+    petitmessagegentil = compliments[rdm];
 
     onMount(() => {
-        $currentUser?.mainAccount?.profile.sexe == "F"
-        
+        $currentUser?.mainAccount?.profile.sexe == "F";
     });
-
-
-
-    
 </script>
 
 <main>
-
     <Navbar />
     <h1 class="h1">
-        <span>Salut !</span><br> {$currentUser?.mainAccount?.prenom}
+        <span>Salut !</span><br />
+        {$currentUser?.mainAccount?.prenom}
         {$currentUser?.mainAccount?.nom}
     </h1>
     <h2 class="h2">
         {petitmessagegentil}
     </h2>
+    <Prochaindevoirs />
+
 
     <Prochaincour />
-
 
 </main>
 
@@ -53,13 +48,12 @@
     .h2 {
         animation-name: fromleft;
         animation-timing-function: ease-out;
-        animation-delay: .3s;
-        animation-duration: .3s;
+        animation-delay: 0.3s;
+        animation-duration: 0.3s;
         animation-fill-mode: forwards;
         opacity: 0%;
         color: black;
         font-weight: normal;
-        margin-bottom: 98px;
     }
     .div {
         display: flex;
@@ -73,7 +67,7 @@
         font-size: 3em;
         animation-name: fromleft;
         animation-timing-function: ease-out;
-        animation-duration: .3s;
+        animation-duration: 0.3s;
         animation-fill-mode: forwards;
     }
     .nomEtablissement {
@@ -90,10 +84,11 @@
         transform: translateX(-50%);
     }
 
-    @keyframes fromleft{
+    @keyframes fromleft {
         from {
             transform: translate(-50%);
-        }to {
+        }
+        to {
             transform: translateX(0%);
             opacity: 1;
         }
