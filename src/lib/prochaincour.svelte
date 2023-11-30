@@ -2,20 +2,27 @@
     import { onMount } from "svelte";
     import type { matiere } from "..";
     import { currentUser } from "../stores";
-    import User from "./User";
-
+    import { addDays, formatHours, formatMinutes } from "./date";
+    import User from "../lib/User";
     let cours: Array<matiere> = [
-        { matiere: "Tu n'as pas de cours pour le moment" } as matiere,
+        {
+            matiere: "Pas de cours",
+            start_date: "2050-01-01 8:00",
+        } as matiere,
     ];
 
     let user: User | undefined;
+
+    let i = 0;
+
     $: cours;
     $: user;
 
     const now = new Date();
 
-    const today = new Date("November 24, 2023 00:00:00");
-    const today2 = new Date("November 29, 2023 23:59:59");
+    let notNow = addDays(now, 1);
+
+    $: notNow;
 
     const startOfToday = new Date(
         now.getFullYear(),
@@ -33,6 +40,8 @@
         59,
         59
     );
+
+    console.log(endOfToday.getDate());
     async function getNextCourse(user: User | undefined) {
         const res = await user?.getSchedule(startOfToday, endOfToday);
 
@@ -50,8 +59,29 @@
 
         return [closest];
     }
-    async function getCurrentDaySchedule(user: User | undefined) {
+    async function getDaySchedule(user: User | undefined, date: Date) {
+        const startOfToday = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            0,
+            0,
+            0
+        );
+        const endOfToday = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            24,
+            59,
+            59
+        );
         const res = await user?.getSchedule(startOfToday, endOfToday);
+
+        if (res) {
+            console.log(res);
+            notNow = new Date(res[0].start_date);
+        }
 
         if (res) {
             cours = res;
@@ -73,19 +103,56 @@
 
 <div class="container">
     <div class="btns">
-        <button
-            class="btn"
-            on:click={async () => await getNextCourse(user ? user : undefined)}
-            >Prochain cour</button
-        >
-        <button
-            class="btn"
-            on:click={async () =>
-                await getCurrentDaySchedule(user ? user : undefined)}
-            >Journée</button
-        >
+        <div class="l">
+            <button
+                class="btn"
+                on:click={async () =>
+                    await getNextCourse(user ? user : undefined)}
+                >Prochain cour</button
+            >
+            <button
+                class="btn"
+                on:click={async () =>
+                    await getDaySchedule(user ? user : undefined, now)}
+                >Journée</button
+            >
+        </div>
+        <div class="r">
+            {#if cours.length > 1}
+                <button
+                    class="btn"
+                    on:click={async () => {
+                        const nn = addDays(notNow, -1);
+
+                        notNow = nn;
+
+                        await getDaySchedule(user ? user : undefined, notNow);
+                    }}>&lt;</button
+                >
+                <button
+                    class="btn"
+                    on:click={async () => {
+                        const nn = addDays(notNow, 1);
+
+                        notNow = nn;
+
+                        await getDaySchedule(user ? user : undefined, notNow);
+                    }}>&gt;</button
+                >
+            {/if}
+        </div>
         <!-- <button class="btn">Semaine</button> -->
     </div>
+
+    {#if cours.length > 1}
+        <div class="weekday">
+            {new Date(cours[0].start_date).toLocaleDateString("fr", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+            })}
+        </div>
+    {/if}
 
     {#each cours as cour}
         <div class="matiere">
@@ -94,7 +161,16 @@
                 style="background-color: {cour.matiere ? cour?.color : ''}"
             ></div>
             <div class="right">
-                {cour?.matiere ? cour?.matiere : "Pas de cours"}
+                <p class="p time">
+                    {cour?.start_date
+                        ? `${formatHours(
+                              new Date(cour.start_date)
+                          )}:${formatMinutes(new Date(cour.start_date))}`
+                        : "?"}
+                </p>
+                <p class="p">
+                    {cour?.matiere ? cour?.matiere : "Pas de cours"}
+                </p>
             </div>
             <div></div>
         </div>
@@ -102,12 +178,22 @@
 </div>
 
 <style>
-
+    .weekday {
+        text-transform: capitalize;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 8px;
+    }
     .container {
         margin-top: 98px;
+        animation-name: fromright;
+        animation-duration: 1s;
+        animation-timing-function: ease-out;
     }
     .btns {
-        margin-bottom: 8px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
     }
     .btn {
         all: unset;
@@ -129,6 +215,10 @@
         justify-content: space-between;
         font-weight: 400;
         margin-bottom: 8px;
+
+        animation-name: fromright;
+        animation-duration: 1s;
+        animation-timing-function: ease-out;
     }
 
     .left {
@@ -141,6 +231,26 @@
     }
     .right {
         display: flex;
+        text-align: center;
+        flex-direction: column;
         align-items: center;
+        justify-content: center;
+    }
+
+    @keyframes fromright {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .p {
+        all: unset;
+    }
+
+    .time {
+        font-weight: 600;
     }
 </style>

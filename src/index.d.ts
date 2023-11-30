@@ -1,14 +1,62 @@
 export type devoir = {
     matiere: string; // Nom d'affichage ("FRANCAIS" / "ENSEIGN.SCIENTIFIQUE")
     codeMatiere: string; // Code ("FRANC" / "G-SCI")
-    aFaire: boolean; // ?
+    aFaire: any; // ?
     idDevoir: number;
-    documentsAFaire: boolean; // ?
+    documentsAFaire: booleanean; // ?
     donneLe: string;
-    effectue: boolean; // Si marqué par l'élève comme tel ?
-    interrogation: boolean;
-    rendreEnLigne: boolean; // Si présence d'un formulaire pour rendre un fichier ?
+    effectue: booleanean; // Si marqué par l'élève comme tel ?
+    interrogation: booleanean;
+    rendreEnLigne: booleanean; // Si présence d'un formulaire pour rendre un fichier ?
 };
+
+interface devoirWithInfo extends devoir {
+    id: number;
+    nomProf: string;
+    aFaire: {
+        contenu: string; // Détail du travail à faire
+        rendreEnLigne: boolean;
+        donneLe: string;
+        effectue: boolean;
+        ressource: ""; // ?, vide jusqu'ici
+        ressourceDocuments: []; // ?, vide jusqu'ici
+        documents: Array<{
+            // Pièces jointes
+            id: number; // Pour la télécharger via la route de téléchargement
+            libelle: string; // Nom
+            date: string;
+            taille: number; // En octets
+            type: "FICHIER_CDT"; // Autres valeurs ?
+            signatureDemandee: boolean; // ?
+            signature: {}; // ?
+        }>;
+        commentaires: Array<{
+            id: number; // identifiant du commentaire
+            idAuteur: number; // identifiant de l'auteur
+            profilAuteur: "E"; // E = Elève, autres valeurs ?
+            auteur: string; // Nom de l'auteur
+            date: string;
+            message: string; // Encodé en base64
+            supprime: boolean; // Si le commentaire a été supprimé ? (semble stupide)
+        }>;
+        elementsProg: []; // ?
+        liensManuel: []; // URL des manuels associés à la matière ?
+        documentsRendus: []; // Fichiers rendus lorsque le formulaire est présent ?
+        contenuDeSeance: {
+            contenu: string;
+            documents: [];
+            commentaires: [];
+        };
+    };
+    contenuDeSeance: {
+        idDevoir: number; // Systématiquement le même identifiant que id plus haut
+        contenu: string;
+        documents: []; // Pièces jointes ?
+        commentaires: []; // Même structure que commentaires sur travail à faire ?
+        elementsProg: [];
+        liensManuel: [];
+    };
+}
 
 export type user = {
     idLogin: number; //int | Paramètre de cookie pour savoir si l'utilisateur est connecté via login/password
@@ -17,7 +65,7 @@ export type user = {
     identifiant: string; //string | Username du compte
     typeCompte: string; //string | Voir Type de compte dans la référence
     codeOgec: string; //string | Code RNE de l'établissement scolaire du compte
-    main: boolean; //boolean | Indique si ce compte est le compte principal de la famille(il peut en avoir plusieur comme avec un parent)
+    main: booleanean; //booleanean | Indique si ce compte est le compte principal de la famille(il peut en avoir plusieur comme avec un parent)
     lastConnexion: Date; //string | Date de dernière connexion à l'api via l'endpoint login (multiples connexions possibles)
     civilite: string;
     prenom: string;
@@ -28,7 +76,7 @@ export type user = {
     nomEtablissement: string;
     logoEtablissement: string;
     couleurAgendaEtablissement: string;
-    dicoEnLigneLeRobert: boolean;
+    dicoEnLigneLeRobert: booleanean;
     socketToken: string; //string | Websocket, à priori il n'est pas prit en compte concernant l'authentification (si on le change on ne sera pas déconnecté)
     modules: [];
     parametresIndividuels: {
@@ -37,7 +85,7 @@ export type user = {
         lsuPoilDansLaMainBorne3: number; // int | Paramètre parcoursup
         modeCalculLSU: string; // ??? | Paramètre de recommandation parcoursup
         isQrcode: boolean; // ???
-        accessibilitéVisuelle: boolean; // boolean | Pour les personnes malvoyantes, une police spéciale est mise en place
+        accessibilitéVisuelle: booleanean; // booleanean | Pour les personnes malvoyantes, une police spéciale est mise en place
         typeSaisieNotesDefaut: string;
         nbJoursMaxRenduDevoirCDT: string;
         typeViewCDTDefaut: string;
@@ -67,20 +115,20 @@ export type loginUser = {
 
     data: {
         accounts: Array<user>;
-        changementdeMDP: boolean;
+        changementdeMDP: booleanean;
     };
 };
 
 export type matiere = {
-    id: 46234; //int | Semble être un identifiant unique du cours
+    id: number; //int | Semble être un identifiant unique du cours
     text: string; //string | Nom du cours (peut diférer de la matière)
     matiere: string;
     codeMatiere: string; //string | Code matière interne au service ED
     typeCours: string; //string | Semble varier (COURS / PERMANENCE)
-    start_date: Date;
+    start_date: string;
     end_date: Date;
     color: string; //string | Couleur hex du cours sur l'edt
-    dispensable: boolean; //string | Si l'élève doit se rendre en cours
+    dispensable: booleanean; //string | Si l'élève doit se rendre en cours
     dispense: string; //int | Rhalala, le sport (:
     prof: string;
     salle: string;
@@ -89,13 +137,13 @@ export type matiere = {
     classeCode: string; //int | Code de la classe (je pense qu'on a compris avec le temps que c'était vide si la cours était dispensé dans plusieures classes)
     groupe: string; //string | Nom du groupe (si dispensé dans plusieures classes)
     groupeCode: string; //string | Code du groupe
-    isFlexible: boolean; //boolean | ???
+    isFlexible: booleanean; //booleanean | ???
     groupeId: number; //int | ID du groupe
     icone: string; //string | Depuis quand on peut avoir des icones ?
-    isModifie: boolean; //boolean | ???
-    contenuDeSeance: boolean; //boolean | boolean même si du contenu est posté
-    devoirAFaire: boolean; //boolean | boolean même si un devoir est posté
-    isAnnule: boolean; //boolean | Si le cours est annulé (franglais dégeu)
+    isModifie: booleanean; //booleanean | ???
+    contenuDeSeance: booleanean; //booleanean | booleanean même si du contenu est posté
+    devoirAFaire: booleanean; //booleanean | booleanean même si un devoir est posté
+    isAnnule: booleanean; //booleanean | Si le cours est annulé (franglais dégeu)
 };
 
 type note = {
@@ -108,11 +156,11 @@ type note = {
             | "2ème Trimestre"
             | "3ème Trimestre"
             | "Année";
-        annuel: boolean; // boolean pour A001..A003, boolean pour A999Z
+        annuel: booleanean; // booleanean pour A001..A003, booleanean pour A999Z
         dateDebut: string;
         dateFin: string;
-        examenBlanc: boolean;
-        cloture: boolean; // boolean si la période est terminée, sinon boolean (cloturée)
+        examenBlanc: booleanean;
+        cloture: booleanean; // booleanean si la période est terminée, sinon booleanean (cloturée)
         dateConseil?: string; // Présent pour les trimestres
         heureConseil?: "HH:MM";
         heureFinConseil?: "HH:MM";
@@ -138,11 +186,11 @@ type note = {
                 coef: 1;
                 effectif: number; // Nombre de notes dans la moyenne ?
                 rang: number; // Rang de l'élève dans la classe ?
-                groupeMatiere: boolean;
+                groupeMatiere: booleanean;
                 idGroupeMatiere: 0;
                 option: 0;
-                sousMatiere: boolean;
-                saisieAppreciationSSMAT: boolean;
+                sousMatiere: booleanean;
+                saisieAppreciationSSMAT: booleanean;
                 professeurs: Array<{ id: number; nom: string }>;
             }>;
             disciplinesSimulation: [];
@@ -164,17 +212,17 @@ type note = {
             | "EXERCICE"
             | "ENSEIGNEMENTS PRATIQUES DISCIPLINAIRES"
             | "DEVOIR MAISON"; // Probablement pas renseigné par le professeur donc liste probablement fixe
-        enLettre: boolean;
+        enLettre: booleanean;
         commentaire: string; // Probablement un truc écrit par le prof
         uncSujet: string; // UNC = chemin de fichier, probablement un lien vers le fichier sujet / corrigé
         uncCorrige: string;
         coef: string;
         noteSur: string;
         valeur: string; // Note, enfin
-        nonSignificatif: boolean;
+        nonSignificatif: booleanean;
         date: string; // Date du contrôle
         dateSaisie: string; // Date de l'ajout de la note, souvent les deux sont égaux (mais pas trjs)
-        valeurisee: boolean; // ?
+        valeurisee: booleanean; // ?
         moyenneClasse: string;
         minClasse: string;
         maxClasse: string;
@@ -190,54 +238,54 @@ type note = {
         libelleEval2: string; // Partiellement atteints
         libelleEval3: string; // Atteints
         libelleEval4: string; // Dépassés
-        affichageMoyenne: boolean;
-        affichageMoyenneDevoir: boolean;
-        affichagePositionMatiere: boolean;
-        affichageNote: boolean;
-        affichageCompetence: boolean;
-        affichageEvaluationsComposantes: boolean;
-        affichageGraphiquesComposantes: boolean;
+        affichageMoyenne: booleanean;
+        affichageMoyenneDevoir: booleanean;
+        affichagePositionMatiere: booleanean;
+        affichageNote: booleanean;
+        affichageCompetence: booleanean;
+        affichageEvaluationsComposantes: booleanean;
+        affichageGraphiquesComposantes: booleanean;
         modeCalculGraphiquesComposantes: "eval";
-        affichageCompNum: boolean;
+        affichageCompNum: booleanean;
         libelleEvalCompNum1: "Tm9uIGF0dGVpbnQ="; // Non atteint
         libelleEvalCompNum2: "UGFydGllbGxlbWVudCBhdHRlaW50"; // Partiellement atteint
         libelleEvalCompNum3: "QXR0ZWludA=="; // Atteint
-        affichageAppreciation: boolean;
-        appreciationsProf: boolean;
-        appreciationProfPrinc: boolean;
-        affichageMention: boolean;
-        affichageAppreciationCE: boolean;
-        affichageAppreciationVS: boolean;
-        affichageAppreciationCN: boolean;
-        affichageAppreciationClasse: boolean;
-        affichageAppreciationPeriodeCloturee: boolean;
-        moyenneUniquementPeriodeCloture: boolean;
-        moyennePeriodeReleve: boolean;
-        moyennePeriodeAnnuelle: boolean;
-        moyennePeriodeHorsP: boolean;
-        moyenneEleveDansNotes: boolean;
-        moyenneEleve: boolean;
-        moyenneEleveDansMoyenne: boolean;
-        moyenneGenerale: boolean;
-        moyenneCoefMatiere: boolean;
-        moyenneClasse: boolean;
-        moyenneMin: boolean;
-        moyenneMax: boolean;
-        moyenneRang: boolean;
+        affichageAppreciation: booleanean;
+        appreciationsProf: booleanean;
+        appreciationProfPrinc: booleanean;
+        affichageMention: booleanean;
+        affichageAppreciationCE: booleanean;
+        affichageAppreciationVS: booleanean;
+        affichageAppreciationCN: booleanean;
+        affichageAppreciationClasse: booleanean;
+        affichageAppreciationPeriodeCloturee: booleanean;
+        moyenneUniquementPeriodeCloture: booleanean;
+        moyennePeriodeReleve: booleanean;
+        moyennePeriodeAnnuelle: booleanean;
+        moyennePeriodeHorsP: booleanean;
+        moyenneEleveDansNotes: booleanean;
+        moyenneEleve: booleanean;
+        moyenneEleveDansMoyenne: booleanean;
+        moyenneGenerale: booleanean;
+        moyenneCoefMatiere: booleanean;
+        moyenneClasse: booleanean;
+        moyenneMin: booleanean;
+        moyenneMax: booleanean;
+        moyenneRang: booleanean;
         moyenneSur: 20;
-        moyenneGraphique: boolean;
-        moyennesSimulation: boolean;
-        coefficientNote: boolean;
-        colonneCoefficientMatiere: boolean;
-        noteGrasSousMoyenne: boolean;
-        noteGrasAudessusMoyenne: boolean;
-        libelleDevoir: boolean;
-        dateDevoir: boolean;
-        typeDevoir: boolean;
-        noteUniquementPeriodeCloture: boolean;
-        notePeriodeReleve: boolean;
-        notePeriodeAnnuelle: boolean;
-        notePeriodeHorsP: boolean;
+        moyenneGraphique: booleanean;
+        moyennesSimulation: booleanean;
+        coefficientNote: booleanean;
+        colonneCoefficientMatiere: booleanean;
+        noteGrasSousMoyenne: booleanean;
+        noteGrasAudessusMoyenne: booleanean;
+        libelleDevoir: booleanean;
+        dateDevoir: booleanean;
+        typeDevoir: booleanean;
+        noteUniquementPeriodeCloture: booleanean;
+        notePeriodeReleve: booleanean;
+        notePeriodeAnnuelle: booleanean;
+        notePeriodeHorsP: booleanean;
         libellesAppreciations: Array<"Appréciation générale">;
         appreciationsParametrage: Array<{
             code: string;

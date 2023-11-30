@@ -8,6 +8,8 @@
 
     $: codecantine = "";
 
+
+
     onMount(() => {
         codecantine = (
             $currentUser?.mainAccount?.modules?.filter(
@@ -16,19 +18,30 @@
         ).params.numeroBadge;
 
         changeBarecode(codecantine);
+
     });
 
     function changeBarecode(code: string) {
         JsBarcode(barecode, code, { format: "CODE39", height: 200, width: 5 });
     }
-
 </script>
 
 <main>
     <Navbar />
 
     <div>
-        <!-- <div style="background-image: url(&quot;https://doc1.ecoledirecte.com/PhotoEleves/0560098C_643455574d33507062386f/4965542b4c67.jpg&quot;);" class="img"> -->
+        <!-- <div style="background-image: url(&quot;https://doc1.ecoledirecte.com/PhotoEleves/0560098C_643455574d33507062386f/4965542b4c67.jpg&quot;);" class="image"> -->
+
+        <!-- <div
+            class="profile"
+            style={`background-image: url("https://doc1.ecoledirecte.com/PhotoEleves/0560098C_643455574d33507062386f/4965542b4c67.jpg");`}
+        ></div> -->
+
+
+        <!-- <image
+            src="https://doc1.ecoledirecte.com/PhotoEleves/0560098C_643455574d33507062386f/4965542b4c67.jpg"
+            alt="image"
+        /> -->
 
         <!-- </div> -->
 

@@ -1,5 +1,13 @@
 import axios from "axios";
-import type { devoir, loginUser, matiere, note, user } from "../index";
+import type {
+    devoir,
+    devoirWithInfo,
+    loginUser,
+    matiere,
+    note,
+    user,
+} from "../index";
+import { addDays, formatDate } from "./date";
 
 const username = encodeURIComponent("Damien Claret");
 const password = encodeURIComponent("Briule@42");
@@ -9,20 +17,12 @@ const login = "v3/login.awp";
 const useragent =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36";
 
-function addDays(date: Date, days: number) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-function formatDate(date: Date) {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-}
 export default class User {
     identifiant: string;
     motdepasse: string;
     mainAccount: user | undefined;
     XToken: string;
-    homeworks: Array<devoir> | undefined;
+    homeworks: undefined | Array<string | Array<devoir | devoirWithInfo | unknown>>;
 
     constructor(id: string, mdp: string) {
         (this.identifiant = id),
@@ -68,38 +68,41 @@ export default class User {
         this.XToken = await res.token;
 
         this.mainAccount = res.data.accounts[0];
+        this.homeworks = await this.getHomework(undefined);
 
         // console.log(this.mainAccount)
     }
 
-    async getHomework(date: Date) {
+    async getNextHomework(date: Date) {
+        let i: number = 0;
+        let res;
+        let nextDate = date;
+        let homework: {
+            [key: string]: Array<devoirWithInfo>;
+        };
+
+        do {
+            res = await this.getHomework(date);
+            console.log(res.data);
+            nextDate = addDays(nextDate, 1);
+        } while (!res);
+
+        return await res;
+    }
+    async getHomework(date: Date | undefined) {
         if (!this.mainAccount) {
             return;
         }
 
-        let i: number = 0;
-        let res;
-        let homework: {
-            [key: string]: Array<devoir>;
-        };
-        do {
-            const formattedDate = formatDate(addDays(date, i));
+        const formattedDate = date ? formatDate(date) : "";
 
-            const cahierdetexte = `v3/Eleves/${this.mainAccount.id}/cahierdetexte.awp?verbe=get&v=4.45.0`;
+        const cahierdetexte = `v3/Eleves/${this.mainAccount.id}/cahierdetexte${
+            date ? `/${formattedDate}` : ""
+        }.awp?verbe=get&`;
 
-            const body = {
-                dateDebut: formattedDate,
-                dateFin: formattedDate,
-                avecTrous: false,
-            };
+        const res = await this.request(cahierdetexte);
 
-            res = await this.request(cahierdetexte, body);
-            i++;
-
-            homework = res.data;
-        } while (!!!res.data);
-
-        return homework;
+        return await res.data;
     }
 
     async getSchedule(startDate: Date, stopDate: Date) {
@@ -116,6 +119,9 @@ export default class User {
             const formattedStartDate = formatDate(addDays(startDate, i));
             const formattedStopDate = formatDate(addDays(startDate, i));
 
+            console.log(formattedStartDate);
+            console.log(formattedStopDate);
+
             const body = {
                 dateDebut: formattedStartDate,
                 dateFin: formattedStopDate,
@@ -124,15 +130,15 @@ export default class User {
 
             res = await this.request(cahierdetexte, body);
             i++;
+            console.log(res.data);
+            schedule = res.data.sort(
+                (a: matiere, b: matiere) =>
+                    new Date(a.start_date).getTime() -
+                    new Date(b.start_date).getTime()
+            );
+        } while (!schedule[0]);
 
-            schedule = res.data;
-        } while (!!!res.data[0]);
-
-        return schedule.sort(
-            (a, b) =>
-                new Date(a.start_date).getTime() -
-                new Date(b.start_date).getTime()
-        );
+        return schedule;
     }
     async getNotes(anneeScolaire: Date) {
         if (!this.mainAccount) {

@@ -29,6 +29,7 @@
     import burger from "../assets/burger.svg";
     import { redirectTo } from "./redirect";
     import { link } from "svelte-spa-router";
+    import Devoirs from "../routes/Devoirs.svelte";
 </script>
 
 <nav class="nav">
@@ -100,9 +101,9 @@
             <li class="li">
                 <a href={`/notes`} use:link>Notes</a>
             </li>
-            <!-- <li class="li">
-                <Link to={`/ecoleindirecte/cahierDeTexte`}>Notes</Link>
-            </li> -->
+            <li class="li">
+                <a href={`/devoirs`} use:link>Devoirs</a>
+            </li>
         </ul>
     </div>
 </nav>

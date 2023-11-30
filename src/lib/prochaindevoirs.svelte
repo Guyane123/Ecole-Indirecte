@@ -16,12 +16,9 @@
             );
 
             user.login().then(() => {
-                user.getHomework(new Date()).then((res) => {
+                user.getNextHomework(new Date()).then((res) => {
                     if (res) {
-                        const [firstValue] = Object.values(res);
-                        devoirs = firstValue;
-
-                        
+                        devoirs = res.matieres;       
                     }
                 });
             });
