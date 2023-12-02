@@ -1,18 +1,23 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import Chart from 'chart.js/auto';
+    import Chart from "chart.js/auto";
 
     import { currentUser } from "../stores";
-    import type { note } from "../index";
+    import type { note, notes } from "../index";
     import User from "../lib/User";
-    import Navbar from "../lib/Navbar.svelte";
+    import Navbar from "../components/Navbar.svelte";
     import { strToNbr } from "../lib/strToNbr";
+    import { addDays, startOfDay } from "../lib/date";
+    import { averageCalculator, outOf20 } from "../lib/averageCalculator";
+    import ChartAverage from "../components/ChartAverage.svelte";
 
-    let chart: HTMLCanvasElement;
-
-    let info: note;
+    let info: notes;
 
     let moyenne = 0;
+
+    let notes: Array<note> | undefined;
+
+    $: notes;
 
     $: moyenne;
     $: info = {
@@ -40,39 +45,13 @@
                 $currentUser!.motdepasse
             );
             user.login().then(() => {
-                user.getNotes(new Date()).then((res) => {
+                user.getNotes(new Date()).then(function (res) {
                     if (res) {
                         info = res;
-                        console.log(res);
-                        let m: number = 0;
-                        let totalCoef: number = 0;
-                        res?.notes.forEach((n) => {
-                            const noteSur20 =
-                                (Number(n.valeur.replace(",", ".")) * 20) /
-                                Number(n.noteSur.replace(",", "."));
-                            const coef = Number(n.coef.replace(",","."))
-                            const weightedNote = noteSur20 * coef;
-                            m += weightedNote;
-                            totalCoef+= coef
 
-                            console.log(n)
-    
-                        });
-                        m = m / totalCoef;
-
-                        moyenne = Math.round(m * 100) / 100;
-
-
-                        // new Chart(chart, {
-                        //     type: "line",
-                        //     data: {
-                        //         labels: res.notes.map((n) => n.date),
-                        //         datasets: [{
-                        //             label:"Notes",
-                        //             data: res.notes.map((n) => n.valeur)
-                        //         }]
-                        //     }
-                        // })
+                        notes = res.notes;
+                        const average: number = averageCalculator(notes);
+                        moyenne = average;
                     }
                 });
             });
@@ -126,10 +105,16 @@
             </ul>
         </div>
     {/each}
-    <canvas bind:this={chart}></canvas>
+    {#if notes}
+        <ChartAverage {notes} />
+        {/if}
 </main>
 
 <style>
+    /* .container {
+        width: 100%;
+        height: 40vh;
+    } */
     .li::before {
         content: "\2022";
         color: var(--primary);

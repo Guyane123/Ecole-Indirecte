@@ -1,5 +1,7 @@
-export function strToNbr(string: string): number {
-    string.replace(",", ".");
+export function strToNbr(string: string): number | undefined {
+    const number = Number(string.replace(",", "."));
 
-    return Number(string);
+    if (!isNaN(number)) {
+        return number;
+    }
 }

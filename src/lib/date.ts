@@ -48,3 +48,14 @@ export function format2Digits(string: string) {
 
     return formatted2Digits;
 }
+
+export function startOfDay(date: Date | string) {
+    let startday = date;
+    if (startday.toString() == "Invalid Date !") {
+        startday = new Date(startday);
+    }
+
+    startday = new Date(new Date(startday).setHours(0, 0, 0, 0));
+
+    return startday;
+}

@@ -18,7 +18,7 @@ interface devoirWithInfo extends devoir {
         rendreEnLigne: boolean;
         donneLe: string;
         effectue: boolean;
-        ressource: ""; // ?, vide jusqu'ici
+        ressource: string; // ?, vide jusqu'ici
         ressourceDocuments: []; // ?, vide jusqu'ici
         documents: Array<{
             // Pièces jointes
@@ -146,7 +146,40 @@ export type matiere = {
     isAnnule: booleanean; //booleanean | Si le cours est annulé (franglais dégeu)
 };
 
-type note = {
+export type note = {
+    id: number; // Identifiant de la note j'imagine
+    devoir: string; // Nom du contrôle
+    codePeriode: "A001" | "A002" | "A003";
+    codeMatiere: string; // Nom abbrégé
+    libelleMatiere: string; // Nom de la matière
+    codeSousMatiere: string;
+    typeDevoir:
+        | "CONTROLE"
+        | "INTERROGATION ORALE"
+        | "TRAVAUX PRATIQUES"
+        | "DEVOIR SUR TABLE"
+        | "INTERROGATION ECRITE"
+        | "EXERCICE"
+        | "ENSEIGNEMENTS PRATIQUES DISCIPLINAIRES"
+        | "DEVOIR MAISON"; // Probablement pas renseigné par le professeur donc liste probablement fixe
+    enLettre: boolean;
+    commentaire: string; // Probablement un truc écrit par le prof
+    uncSujet: string; // UNC = chemin de fichier, probablement un lien vers le fichier sujet / corrigé
+    uncCorrige: string;
+    coef: string;
+    noteSur: string;
+    valeur: string; // Note, enfin
+    nonSignificatif: boolean;
+    date: string; // Date du contrôle
+    dateSaisie: string; // Date de l'ajout de la note, souvent les deux sont égaux (mais pas trjs)
+    valeurisee: boolean; // ?
+    moyenneClasse: string;
+    minClasse: string;
+    maxClasse: string;
+    elementsProgramme: []; // Liste de compétences ou qqch du genre j'imagine
+};
+
+export type notes = {
     foStat: string; // Une sorte d'identifiant bizarre
     periodes: Array<{
         idPeriode: "A001" | "A002" | "A003" | "A999Z";
@@ -172,12 +205,12 @@ type note = {
             moyenneMin: string;
             moyenneMax: string;
             nomPP: string; // Prof principal
-            nomCE: ""; // ?
-            decisionDuConseil: ""; // Probablement une fonctionnalité de bulletin en ligne
+            nomCE: string; // ?
+            decisionDuConseil: string; // Probablement une fonctionnalité de bulletin en ligne
             disciplines: Array<{
                 id: number;
                 codeMatiere: string;
-                codeSousMatiere: "";
+                codeSousMatiere: string;
                 discipline: string; // = matière
                 moyenne: string;
                 moyenneClasse: string;
@@ -196,38 +229,7 @@ type note = {
             disciplinesSimulation: [];
         };
     }>;
-    notes: Array<{
-        id: number; // Identifiant de la note j'imagine
-        devoir: string; // Nom du contrôle
-        codePeriode: "A001" | "A002" | "A003";
-        codeMatiere: string; // Nom abbrégé
-        libelleMatiere: string; // Nom de la matière
-        codeSousMatiere: "";
-        typeDevoir:
-            | "CONTROLE"
-            | "INTERROGATION ORALE"
-            | "TRAVAUX PRATIQUES"
-            | "DEVOIR SUR TABLE"
-            | "INTERROGATION ECRITE"
-            | "EXERCICE"
-            | "ENSEIGNEMENTS PRATIQUES DISCIPLINAIRES"
-            | "DEVOIR MAISON"; // Probablement pas renseigné par le professeur donc liste probablement fixe
-        enLettre: booleanean;
-        commentaire: string; // Probablement un truc écrit par le prof
-        uncSujet: string; // UNC = chemin de fichier, probablement un lien vers le fichier sujet / corrigé
-        uncCorrige: string;
-        coef: string;
-        noteSur: string;
-        valeur: string; // Note, enfin
-        nonSignificatif: booleanean;
-        date: string; // Date du contrôle
-        dateSaisie: string; // Date de l'ajout de la note, souvent les deux sont égaux (mais pas trjs)
-        valeurisee: booleanean; // ?
-        moyenneClasse: string;
-        minClasse: string;
-        maxClasse: string;
-        elementsProgramme: []; // Liste de compétences ou qqch du genre j'imagine
-    }>;
+    notes: Array<note>;
     parametrage: {
         // Différents paramètres d'affichage, de ce qui s'affiche ou non
         couleurEval1: string; // Couleurs des compétences
@@ -293,5 +295,81 @@ type note = {
             nbMaxCaractere: 400;
             libelle: "Appréciation générale";
         }>;
+    };
+};
+
+export type messages = {
+    classeurs: [];
+    messages: {
+        received: Array<message>;
+        draft: [];
+        archived: [];
+    };
+    parametrage: {
+        isActif: boolean;
+        canParentsLireMessagesEnfants: boolean;
+        destAdmin: boolean;
+        destEleve: boolean;
+        destFamille: boolean;
+        destProf: boolean;
+        destEspTravail: boolean;
+        disabledNotification: boolean;
+        notificationEmailEtablissement: boolean;
+        choixMailNotification: number;
+        autreMailNotification: string;
+        mailPro: string;
+        mailPerso: string;
+        messagerieApiVersion: "v3";
+        blackListProfActive: boolean;
+        estEnBlackList: boolean;
+        afficherToutesLesClasses: boolean;
+    };
+    pagination: {
+        messagesRecusCount: number;
+        messagesEnvoyesCount: number;
+        messagesArchivesCount: number;
+        messagesRecusNotReadCount: number;
+        messagesDraftCount: number;
+    };
+};
+
+export type message = {
+    id: string;
+    responseId: number;
+    forwardId: number;
+    mtype: "received" | "sent";
+    read: boolean;
+    idDossier: number;
+    idClasseur: number;
+    transferred: boolean;
+    answered: boolean;
+    to_cc_cci: "cci";
+    brouillon: boolean;
+    canAnswer: boolean;
+    subject: string;
+    content: string;
+    date: string;
+    to: [];
+    files: [
+        {
+            id: number;
+            libelle: number;
+            date: number;
+            type: number;
+            signatureDemandee: boolean;
+            signature: {};
+        }
+    ];
+    from: {
+        name: string;
+        nom: string;
+        prenom: string;
+        particule: string;
+        civilite: string;
+        role: string;
+        listeRouge: boolean;
+        id: number;
+        read: boolean;
+        fonctionPersonnel: string;
     };
 };

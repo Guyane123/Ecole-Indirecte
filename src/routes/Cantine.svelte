@@ -2,7 +2,7 @@
     import JsBarcode from "jsbarcode";
     import { currentUser } from "../stores";
     import { onMount } from "svelte";
-    import Navbar from "../lib/Navbar.svelte";
+    import Navbar from "../components/Navbar.svelte";
 
     let barecode: SVGSVGElement;
 

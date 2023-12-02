@@ -6,6 +6,8 @@
     import Router from 'svelte-spa-router';
     import Devoirs from './routes/Devoirs.svelte';
     import Devoir from './routes/Devoir.svelte';
+    import Messages from './routes/Messages.svelte';
+    import Message from './routes/Message.svelte';
 
     const routes = {
         '/': Login,
@@ -15,9 +17,12 @@
         '/notes/': Notes,
 
         '/devoirs/': Devoirs,
-        '/devoir/:id': Devoir,
+        '/devoir/:id/:date': Devoir,
 
         '/cantine/': Cantine,
+
+        '/messages/': Messages,
+        '/message/:id': Message,
 
         '*': Login,
     };

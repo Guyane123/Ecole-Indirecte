@@ -2,26 +2,45 @@
     import { onMount } from "svelte";
     import { currentUser } from "../stores";
     import User from "../lib/User";
-    import Navbar from "../lib/Navbar.svelte";
+    import Navbar from "../components/Navbar.svelte";
     import compliments from "../assets/compliments.json";
     import { redirectTo } from "../lib/redirect";
-    import Prochaincour from "../lib/prochaincour.svelte";
-    import Prochaindevoirs from "../lib/prochaindevoirs.svelte";
-
+    import Prochaincour from "../components/prochaincour.svelte";
+    import Prochaindevoirs from "../components/prochaindevoirs.svelte";
+    import type { devoir } from "..";
 
     if (!$currentUser) {
-            redirectTo("/");
-        }
+        redirectTo("/");
+    }
 
-    let petitmessagegentil = "";
+    let devoirs: Array<devoir>;
+    $: devoirs = [];
 
-    const rdm = Math.round(Math.random() * 100) % compliments.length;
 
-    petitmessagegentil = compliments[rdm];
+    let schedulUser: User | undefined = undefined;
+    $: schedulUser;
 
-    onMount(() => {
-        $currentUser?.mainAccount?.profile.sexe == "F";
-    });
+
+    if ($currentUser) {
+        onMount(() => {
+            const user = new User(
+                $currentUser!.identifiant,
+                $currentUser!.motdepasse
+            );
+
+            user.login().then(() => {
+                user?.getNextHomework(new Date()).then((res) => {
+                    if (res) {
+                        devoirs = res.matieres;
+                    }
+                });
+                schedulUser = user
+            });
+        });
+    }
+
+    const petitmessagegentil =
+        compliments[Math.round(Math.random() * 100) % compliments.length];
 </script>
 
 <main>
@@ -34,10 +53,12 @@
     <h2 class="h2">
         {petitmessagegentil}
     </h2>
-    <Prochaindevoirs />
 
+    <p>Tu as {devoirs?.length ? devoirs.length : "?"} devoir(s) à faire.</p>
 
-    <Prochaincour />
+    {#if schedulUser}
+        <Prochaincour user={schedulUser}/>
+    {/if}
 
 </main>
 

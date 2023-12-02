@@ -3,7 +3,7 @@
     import { currentUser } from "../stores";
     import type { devoir, devoirWithInfo } from "../index";
     import User from "../lib/User";
-    import Navbar from "../lib/Navbar.svelte";
+    import Navbar from "../components/Navbar.svelte";
     import { link } from "svelte-spa-router";
     // import { base64Decode } from "../lib/base64";
 
@@ -33,7 +33,6 @@
 
             user.getHomework(undefined).then((res) => {
                 if (res) {
-                    // devoirs = Object.entries(res) as Array<string| Array<devoir>>
                     console.log(devoirs);
                 }
             });
@@ -51,7 +50,7 @@
 
                 {#if Array.isArray(t[1])}
                     {#each t[1] as d}
-                        <a href={`/devoir/${d.idDevoir}`} use:link class="devoir">
+                        <a href={`/devoir/${d.idDevoir}/${t[0]}`} use:link class="devoir">
                             <p class="matiere p">{d.matiere}</p>
                             <p class="interrogation p">
                                 {d.interrogation ? "Contrôle" : ""}

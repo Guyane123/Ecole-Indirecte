@@ -4,7 +4,7 @@ import type {
     devoirWithInfo,
     loginUser,
     matiere,
-    note,
+    notes,
     user,
 } from "../index";
 import { addDays, formatDate } from "./date";
@@ -22,7 +22,9 @@ export default class User {
     motdepasse: string;
     mainAccount: user | undefined;
     XToken: string;
-    homeworks: undefined | Array<string | Array<devoir | devoirWithInfo | unknown>>;
+    homeworks:
+        | undefined
+        | Array<string | Array<devoir | devoirWithInfo | unknown>>;
 
     constructor(id: string, mdp: string) {
         (this.identifiant = id),
@@ -33,7 +35,6 @@ export default class User {
     }
 
     async request(url: string, args?: any) {
-        console.log("fetch");
         try {
             const response = await axios.post(
                 ED + url,
@@ -69,23 +70,16 @@ export default class User {
 
         this.mainAccount = res.data.accounts[0];
         this.homeworks = await this.getHomework(undefined);
-
-        // console.log(this.mainAccount)
     }
 
     async getNextHomework(date: Date) {
-        let i: number = 0;
         let res;
         let nextDate = date;
-        let homework: {
-            [key: string]: Array<devoirWithInfo>;
-        };
 
         do {
-            res = await this.getHomework(date);
-            console.log(res.data);
+            res = await this.getHomework(nextDate);
             nextDate = addDays(nextDate, 1);
-        } while (!res);
+        } while (res.matieres.length == 0);
 
         return await res;
     }
@@ -105,7 +99,7 @@ export default class User {
         return await res.data;
     }
 
-    async getSchedule(startDate: Date, stopDate: Date) {
+    async getSchedule(startDate: Date, stopDate: Date, mode: "+" | "-" = "+") {
         if (!this.mainAccount) {
             return;
         }
@@ -119,9 +113,6 @@ export default class User {
             const formattedStartDate = formatDate(addDays(startDate, i));
             const formattedStopDate = formatDate(addDays(startDate, i));
 
-            console.log(formattedStartDate);
-            console.log(formattedStopDate);
-
             const body = {
                 dateDebut: formattedStartDate,
                 dateFin: formattedStopDate,
@@ -129,8 +120,11 @@ export default class User {
             };
 
             res = await this.request(cahierdetexte, body);
-            i++;
-            console.log(res.data);
+            if (mode == "+") {
+                i++;
+            } else {
+                i--;
+            }
             schedule = res.data.sort(
                 (a: matiere, b: matiere) =>
                     new Date(a.start_date).getTime() -
@@ -153,9 +147,32 @@ export default class User {
 
         const res = await this.request(notesPath, body);
 
-        let notes: note = res.data;
+        let notes: notes = res.data;
 
         return notes;
+    }
+
+    async getMessages() {
+        if (!this.mainAccount) {
+            return;
+        }
+        const messagesPath = `/v3/eleves/${this.mainAccount.id}/messages.awp?force=false&typeRecuperation=received&idClasseur=0&orderBy=date&order=desc&query=&onlyRead=&page=0&itemsPerPage=100&getAll=0&verbe=get&v=4.46.0`;
+
+        const res = await this.request(messagesPath);
+
+        console.log(res);
+        return res.data;
+    }
+
+    async getMessage(id: string) {
+        if (!this.mainAccount) {
+            return;
+        }
+        const messagesPath = `/v3/eleves/${this.mainAccount.id}/messages/${id}.awp?verbe=get&mode=destinataire&v=4.46.0`;
+
+        const res = await this.request(messagesPath);
+
+        return res.data;
     }
 
     getUserInfo() {

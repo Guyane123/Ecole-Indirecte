@@ -1,7 +1,7 @@
 <script lang="ts">
     import { currentUser } from "../stores";
     import { onMount } from "svelte";
-    import { clickOutside } from "./clickOutside";
+    import { clickOutside } from "../lib/clickOutside";
 
 
     let listContainer: HTMLElement;
@@ -27,7 +27,7 @@
     }
 
     import burger from "../assets/burger.svg";
-    import { redirectTo } from "./redirect";
+    import { redirectTo } from "../lib/redirect";
     import { link } from "svelte-spa-router";
     import Devoirs from "../routes/Devoirs.svelte";
 </script>
@@ -103,6 +103,9 @@
             </li>
             <li class="li">
                 <a href={`/devoirs`} use:link>Devoirs</a>
+            </li>
+            <li class="li">
+                <a href={`/messages`} use:link>Messages</a>
             </li>
         </ul>
     </div>
@@ -195,7 +198,7 @@
         left: 0;
         top: 0px;
         padding: 0;
-        position: absolute;
+        position: fixed;
         width: 75%;
         height: 100%;
         transition: transform 0.3s ease-out;

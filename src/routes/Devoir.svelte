@@ -3,47 +3,44 @@
     import { currentUser } from "../stores";
     import { onMount } from "svelte";
     import User from "../lib/User";
-    import type { devoir, devoirWithInfo } from "../index";
-    import Navbar from "../lib/Navbar.svelte";
+    import type { devoir, devoirWithInfo, matiere } from "../index";
+    import Navbar from "../components/Navbar.svelte";
 
-
-
+    const id = $params?.id!;
+    const date = $params?.date!;
 
     let devoir: devoirWithInfo = {
         aFaire: {
-            contenu: ""
-        }
-    }
+            contenu: "",
+        },
+    };
 
-    $:devoir;
-    
+    $: devoir;
+
     if ($currentUser) {
         onMount(() => {
-
-
             const user = new User(
                 $currentUser!.identifiant,
                 $currentUser!.motdepasse
             );
 
             user.login().then(() => {
-                user.getHomework(new Date()).then((res) => {
+                user.getHomework(undefined).then((res) => {
                     if (res) {
-                        console.log(res.matieres)
-                        console.log(res.matieres[1].id)
-                        console.log($params?.id)
-                        devoir = res.matieres.filter((d) => {
-                            return d.id == Number($params?.id)
-                        })[0]
 
-                        console.log(devoir)
+                        user.getHomework(new Date($params?.date!)).then((res) => {
+                            console.log(id);
+                            console.log(res.matieres[0]);
+                            devoir = res.matieres.filter((d: devoirWithInfo) => {
+                                return d.id == Number($params?.id);
+                            })[0];
+                        });
                     }
                 });
             });
         });
     }
 </script>
-
 
 <main>
     <Navbar />

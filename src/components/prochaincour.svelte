@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import type { matiere } from "..";
-    import { currentUser } from "../stores";
-    import { addDays, formatHours, formatMinutes } from "./date";
+    import { addDays, formatHours, formatMinutes } from "../lib/date";
     import User from "../lib/User";
     let cours: Array<matiere> = [
         {
@@ -11,12 +10,9 @@
         } as matiere,
     ];
 
-    let user: User | undefined;
-
-    let i = 0;
+    export let user: User;
 
     $: cours;
-    $: user;
 
     const now = new Date();
 
@@ -41,9 +37,10 @@
         59
     );
 
-    console.log(endOfToday.getDate());
     async function getNextCourse(user: User | undefined) {
         const res = await user?.getSchedule(startOfToday, endOfToday);
+
+        console.log(res);
 
         const closest = res?.reduce(function (prev, curr) {
             return Math.abs(
@@ -51,15 +48,22 @@
             ) < Math.abs(new Date(prev.start_date).getTime() - now.getTime())
                 ? curr
                 : prev;
+
         });
 
         if (closest) {
             cours = [closest];
         }
 
+        console.log(closest);
+
         return [closest];
     }
-    async function getDaySchedule(user: User | undefined, date: Date) {
+    async function getDaySchedule(
+        user: User | undefined,
+        date: Date,
+        mode?: "+" | "-"
+    ) {
         const startOfToday = new Date(
             date.getFullYear(),
             date.getMonth(),
@@ -76,7 +80,7 @@
             59,
             59
         );
-        const res = await user?.getSchedule(startOfToday, endOfToday);
+        const res = await user?.getSchedule(startOfToday, endOfToday, mode);
 
         if (res) {
             console.log(res);
@@ -89,16 +93,12 @@
 
         return res;
     }
-
-    if ($currentUser) {
-        user = new User($currentUser.identifiant, $currentUser.motdepasse);
-
-        onMount(() => {
-            user?.login().then(() => {
-                getNextCourse(user!);
-            });
-        });
-    }
+    onMount(() => {
+        // console.log(user)
+        if(user) {
+            getNextCourse(user).then((res) => console.log(res));
+        }
+    });
 </script>
 
 <div class="container">
@@ -126,7 +126,11 @@
 
                         notNow = nn;
 
-                        await getDaySchedule(user ? user : undefined, notNow);
+                        await getDaySchedule(
+                            user ? user : undefined,
+                            notNow,
+                            "-"
+                        );
                     }}>&lt;</button
                 >
                 <button
@@ -136,7 +140,11 @@
 
                         notNow = nn;
 
-                        await getDaySchedule(user ? user : undefined, notNow);
+                        await getDaySchedule(
+                            user ? user : undefined,
+                            notNow,
+                            "+"
+                        );
                     }}>&gt;</button
                 >
             {/if}
