@@ -1,11 +1,19 @@
 <script lang="ts">
     import { currentUser } from "../stores";
-    import { onMount } from "svelte";
     import { clickOutside } from "../lib/clickOutside";
+    import { redirectTo } from "../lib/redirect";
+    import { link } from "svelte-spa-router";
 
+    import moon from "../assets/moon.svg"
+    import sun from "../assets/sun.svg"
+
+    import logo from "../assets/logo.svg";
+    import { onMount } from "svelte";
 
     let listContainer: HTMLElement;
     let burgerContainer: SVGSVGElement;
+
+    let themebtn: HTMLImageElement;
 
     let b1: SVGPathElement;
     let b2: SVGPathElement;
@@ -26,10 +34,21 @@
         redirectTo("/");
     }
 
-    import burger from "../assets/burger.svg";
-    import { redirectTo } from "../lib/redirect";
-    import { link } from "svelte-spa-router";
-    import Devoirs from "../routes/Devoirs.svelte";
+    let isDarkMode = false;
+
+    $:isDarkMode;
+
+    function toggleTheme() {
+        const rootDataset = document.documentElement.dataset;
+
+
+        const inDarkMode = rootDataset.theme == "dark";
+        rootDataset.theme = inDarkMode ? "" : "dark";
+
+        isDarkMode = inDarkMode
+
+    }
+
 </script>
 
 <nav class="nav">
@@ -108,10 +127,33 @@
                 <a href={`/messages`} use:link>Messages</a>
             </li>
         </ul>
+        <div class="bottom">
+            <button class="themebtn" on:click={() => toggleTheme()}><img bind:this={themebtn} src={isDarkMode ? sun : moon} alt="theme switcher"></button>
+            <img class="logo" src={logo} alt="logo" />
+        </div>
     </div>
 </nav>
 
 <style>
+    #burger {
+        all: unset;
+        color: #d3531a!important;
+    }
+    .themebtn {
+        all: unset;
+        bottom: 0px;
+        margin-bottom: 32px;
+        margin-left: 40px;
+        position: absolute;
+    }
+    .logo {
+        width: 75%;
+        position: relative;
+        left: 68%;
+        transform: translateX(-50%);
+        rotate: 20deg;
+        opacity: 20%;
+    }
     .list {
         margin-top: 64px;
         display: flex;
@@ -145,7 +187,6 @@
 
     .li {
         all: unset;
-        color: black;
         list-style-type: none;
         margin-bottom: 16px;
         cursor: pointer;
@@ -161,10 +202,11 @@
         position: absolute;
         height: 9px;
         width: 100%;
-        background: #d3531a;
+        stroke: var(--text);
         border-radius: 9px;
         opacity: 1;
         left: 0;
+
 
         transform: rotate(0deg);
 
@@ -175,17 +217,6 @@
         all: unset;
         cursor: pointer;
     }
-    .burger {
-        width: 60px;
-        height: 45px;
-        position: relative;
-        margin: 50px auto;
-
-        transform: rotate(0deg);
-
-        transition: 0.5s ease-in-out;
-        cursor: pointer;
-    }
     .nav {
         /* background-color: var(--secondary); */
         display: flex;
@@ -193,6 +224,8 @@
         margin-bottom: 12%;
     }
     .list_container {
+        overflow-x: hidden;
+        overflow-y: hidden;
         z-index: 10;
         margin: 0;
         left: 0;
@@ -203,6 +236,9 @@
         height: 100%;
         transition: transform 0.3s ease-out;
         background-color: var(--secondary);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .hidden {

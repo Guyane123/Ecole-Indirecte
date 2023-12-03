@@ -125,12 +125,15 @@ export default class User {
             } else {
                 i--;
             }
-            schedule = res.data.sort(
-                (a: matiere, b: matiere) =>
-                    new Date(a.start_date).getTime() -
-                    new Date(b.start_date).getTime()
-            );
+
+            schedule = res.data;
         } while (!schedule[0]);
+
+        schedule = res.data.sort(
+            (a: matiere, b: matiere) =>
+                new Date(a.start_date).getTime() -
+                new Date(b.start_date).getTime()
+        );
 
         return schedule;
     }
@@ -174,6 +177,7 @@ export default class User {
 
         return res.data;
     }
+
 
     getUserInfo() {
         return this.mainAccount;

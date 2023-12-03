@@ -73,7 +73,6 @@
         animation-duration: 0.3s;
         animation-fill-mode: forwards;
         opacity: 0%;
-        color: black;
         font-weight: normal;
     }
     .div {

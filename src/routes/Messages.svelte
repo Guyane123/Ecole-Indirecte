@@ -3,21 +3,19 @@
     import { currentUser } from "../stores";
     import Navbar from "../components/Navbar.svelte";
     import { onMount } from "svelte";
-    import type { message } from "..";
+    import type { message, senders } from "..";
     import { link } from "svelte-spa-router";
-    let messages: Array<message>;
+    import { fetchMessages } from "../lib/fetchMessages";
+    import axios from "axios";
 
-    type senders = {
-        name: string;
-        id: string,
-        messages: Array<{
-            content: string;
-            createdAt: Date;
-        }>;
-    };
 
     let conversations: Array<senders> = [];
     $: conversations;
+
+    function generateRandomCat() {
+        return "https://cataas.com/cat/gif?height=64&width=64"
+    }
+
 
     onMount(() => {
         const user = new User(
@@ -25,60 +23,14 @@
             $currentUser!.motdepasse
         );
 
-        let senders: Array<senders> = [];
 
         user.login().then(() => {
             user.getMessages().then((res) => {
-                if (res) {
-                    messages = res.messages.received.sort(
-                        (a: message, b: message) =>
-                            new Date(b.date).getTime() -
-                            new Date(a.date).getTime()
-                    );
 
-                    messages.forEach((m) => {
-                        const newSender = {
-                            name: m.from.prenom + `${m.from.particule ? " " + m.from.particule: ""}` +  " " + m.from.nom,
-                        };
-
-                        let isDuplicate = false;
-                        for (let i = 0; i < senders.length; i++) {
-                            if (senders[i].name == newSender.name) {
-                                isDuplicate = true;
-                            }
-                        }
-
-                        if (!isDuplicate) {
-                            senders.push(newSender as senders);
-                        }
-                    });
-
-                    messages.forEach((m) => {
-                        // let index = senders.filter((s, k) => {
-                        //     if(s.name == m.from.prenom + `${m.from.particule ? " " + m.from.particule: ""}` +  "" + m.from.nom){
-                        //         return k;
-                        //     }
-                        // })[0]
-
-                        const name = m.from.prenom + `${m.from.particule ? " " + m.from.particule: ""}` +  " " + m.from.nom
-                        const index = senders.findIndex(i => i.name ==  name)
-
-                        const oldMessages = senders[index].messages? senders[index].messages : []
-                        
-                        const newSender = {
-                            name: senders[index].name,
-                            id: m.id,
-                            messages: [...oldMessages, {content: m.subject, createdAt: new Date(m.date)}]
-                        }
-
-                        senders[index] = newSender
-
-                    });
-
-                    conversations = senders;
-
-                    console.log(conversations)
+                if(res) {
+                    conversations = fetchMessages(res)
                 }
+
             });
         });
     });
@@ -90,10 +42,10 @@
     {#if conversations}
         {#each conversations as c}
             <a class="message" use:link href="/message/{c.id}">
-                <img class="left" src={"http://placekitten.com/64/64"} alt="profile"/>
+                <img class="left" src={generateRandomCat()} alt="profile"/>
                 <div class="middle">
                     <p class="name">{c.name}</p>
-                    <p>{c.messages[c.messages?.length - 1].content ?? ""}</p>
+                    <p class={`${c.messages[0].isReaded ? "" : "notreaded" }`}>{c.messages[0].content ?? ""}</p>
                 </div>
                 <div class="right">{c.messages[c.messages?.length - 1].createdAt.toLocaleDateString("fr", {day: "numeric", month: "numeric"})}</div>
             </a>
@@ -112,6 +64,9 @@
         border-radius: 64px;
         align-items: center;
         box-sizing: border-box;
+    }
+    .notreaded {
+        font-weight: 600;
     }
     .left {
         margin-right: 16px;

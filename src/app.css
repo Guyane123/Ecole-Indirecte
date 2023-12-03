@@ -16,12 +16,24 @@
     --secondary: #EBD1BD;
     --accent: #A86634;
     --margin-lg: 5% 12%;
-
 }
+
+[data-theme="dark"] {
+    --text: #FAEFF5;
+    --bg: #14060E;
+    --primary: #A4323A;
+    --secondary: #422814;
+    --accent: #CB8A57;   
+}
+
+
+
 body {
     margin: var(--margin-lg);
     font-family: 'Montserrat', sans-serif;
     color: var(--text);
     background-color: var(--bg);
     font-weight: 400;
+
+    transition: background .3s;
 }

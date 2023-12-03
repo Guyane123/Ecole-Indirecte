@@ -373,3 +373,15 @@ export type message = {
         fonctionPersonnel: string;
     };
 };
+
+
+type senders = {
+    name: string;
+    id: string;
+    messages: Array<{
+        content: string;
+        createdAt: Date;
+        id: string;
+        isReaded: boolean;
+    }>;
+};
