@@ -4,6 +4,7 @@ import type {
     devoirWithInfo,
     loginUser,
     matiere,
+    messages,
     notes,
     user,
 } from "../index";
@@ -22,6 +23,8 @@ export default class User {
     motdepasse: string;
     mainAccount: user | undefined;
     XToken: string;
+    cn: string | undefined;
+    cv: string | undefined;
     homeworks:
         | undefined
         | Array<string | Array<devoir | devoirWithInfo | unknown>>;
@@ -31,6 +34,8 @@ export default class User {
             (this.motdepasse = mdp),
             (this.XToken = ""),
             (this.homeworks = undefined);
+            (this.cn = undefined);
+            (this.cv = undefined);
         // this.login()
     }
 
@@ -62,15 +67,47 @@ export default class User {
         const body = {
             identifiant: this.identifiant,
             motdepasse: this.motdepasse,
-        };
-
+            isReLogin: false,
+            uuid: "",
+            fa: [
+                {
+                    cn: this.cn,
+                    cv: this.cv
+                }
+            ]
+        }
         const res = await this.request("v3/login.awp?verbe=get&", body);
-
         this.XToken = await res.token;
+        if(res.code == 250) {
+            const qcm = await this.request("v3/connexion/doubleauth.awp?verbe=get&");
+            console.log(qcm.data)
+            console.log(qcm.data.propositions)
+
+            return {propositions: qcm.data.propositions, question: qcm.data.question}
+        }
+
+
+
+
+
 
         this.mainAccount = res.data.accounts[0];
+
         this.homeworks = await this.getHomework(undefined);
     }
+
+
+    async qcm(answear: string) {
+
+        const choix = answear
+        const qcmRespons = await this.request("v3/connexion/doubleauth.awp?verbe=post&", {choix: choix});
+        this.cn = qcmRespons.data.cn
+        this.cv = qcmRespons.data.cv
+
+
+        await this.login()
+    }
+
 
     async getNextHomework(date: Date) {
         let res;
@@ -78,6 +115,7 @@ export default class User {
 
         do {
             res = await this.getHomework(nextDate);
+            console.log(res)
             nextDate = addDays(nextDate, 1);
         } while (res.matieres.length == 0);
 
@@ -95,8 +133,8 @@ export default class User {
         }.awp?verbe=get&`;
 
         const res = await this.request(cahierdetexte);
-
-        return await res.data;
+        console.log(res, "lsdjgm")
+        return await res;
     }
 
     async getSchedule(startDate: Date, stopDate: Date, mode: "+" | "-" = "+") {
@@ -126,6 +164,8 @@ export default class User {
                 i--;
             }
 
+            console.log(res)
+
             schedule = res.data;
         } while (!schedule[0]);
 
@@ -134,6 +174,8 @@ export default class User {
                 new Date(a.start_date).getTime() -
                 new Date(b.start_date).getTime()
         );
+
+        console.log(schedule)
 
         return schedule;
     }
@@ -159,8 +201,8 @@ export default class User {
         if (!this.mainAccount) {
             return;
         }
-        const messagesPath = `/v3/eleves/${this.mainAccount.id}/messages.awp?force=false&typeRecuperation=received&idClasseur=0&orderBy=date&order=desc&query=&onlyRead=&page=0&itemsPerPage=100&getAll=0&verbe=get&v=4.46.0`;
-
+        const messagesPath = `v3/eleves/${this.mainAccount.id}/messages.awp?force=false&typeRecuperation=received&idClasseur=0&orderBy=date&order=desc&query=&onlyRead=&page=0&itemsPerPage=100&getAll=0&verbe=get&v=4.62.1`;
+        console.log(messagesPath)
         const res = await this.request(messagesPath);
 
         console.log(res);

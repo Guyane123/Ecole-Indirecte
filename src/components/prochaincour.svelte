@@ -94,7 +94,6 @@
         return res;
     }
     onMount(() => {
-        // console.log(user)
         if(user) {
             getNextCourse(user).then((res) => console.log(res));
         }

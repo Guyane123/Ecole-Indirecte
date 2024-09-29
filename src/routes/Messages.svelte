@@ -23,16 +23,15 @@
             $currentUser!.motdepasse
         );
 
+        console.log("dd")
 
-        user.login().then(() => {
             user.getMessages().then((res) => {
-
+                console.log(res)
                 if(res) {
                     conversations = fetchMessages(res)
                 }
 
             });
-        });
     });
 </script>
 
